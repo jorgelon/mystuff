@@ -2,13 +2,13 @@
 
 set -euf -o pipefail
 
-apt-get update
+rm -f "/etc/apt/sources.list.d/*.list"
 
 # Prepare Microsoft repo
 apt-get install wget gpg -y
 wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor >packages.microsoft.gpg
 install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
-sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
+echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" >/etc/apt/sources.list.d/vscode.list
 rm -f packages.microsoft.gpg
 
 # Prepare Hashicorp repo
@@ -21,14 +21,7 @@ wget -O- https://www.virtualbox.org/download/oracle_vbox_2016.asc | gpg --dearmo
 
 # Prepare Google repo
 wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
-echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >>/etc/apt/sources.list.d/google.list
-
-# Steam repo
-tee /etc/apt/sources.list.d/steam-stable.list <<'EOF'
-deb [arch=amd64,i386 signed-by=/usr/share/keyrings/steam.gpg] https://repo.steampowered.com/steam/ stable steam
-deb-src [arch=amd64,i386 signed-by=/usr/share/keyrings/steam.gpg] https://repo.steampowered.com/steam/ stable steam
-EOF
-dpkg --add-architecture i386
+echo "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" >/etc/apt/sources.list.d/google-chrome.list
 
 apt-get update
 apt-get install -y \
@@ -40,4 +33,4 @@ apt-get install -y \
 	packer terraform \
 	virtualbox-7.0 \
 	google-chrome-stable \
-	libgl1-mesa-dri:amd64 libgl1-mesa-dri:i386 libgl1-mesa-glx:amd64 libgl1-mesa-glx:i386 steam-launcher
+	steam
